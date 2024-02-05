@@ -1,0 +1,5 @@
+TRUTH_FILE = 'D:/Datasets/melanomas/merged.csv'
+IMAGE_DIR = 'D:/Datasets/melanomas/Merged/Images'
+TRAIN_DIR = 'D:/Datasets/melanomas/Merged/Train'
+TEST_DIR = 'D:/Datasets/melanomas/Merged/Test'
+MODELS_DIR = 'C:/Users/skaif/Documents/CNN/Models/New'
