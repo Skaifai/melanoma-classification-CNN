@@ -57,6 +57,7 @@ valid_transform = transforms.Compose(
 )
 
 
+
 # TODO
 def show_image_after_transforms(loader):
     image, _ = iter(loader).__next__()
