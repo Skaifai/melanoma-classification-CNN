@@ -5,6 +5,7 @@ import torch.nn as nn
 def softplus(x):
     return torch.log(1 + torch.exp(-x))
 
+
 class ProposedActivation(nn.Module):
     def __init__(self):
         super(ProposedActivation, self).__init__()
