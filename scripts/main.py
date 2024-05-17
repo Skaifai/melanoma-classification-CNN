@@ -2,12 +2,12 @@ import os
 from torch import optim
 from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
-from Code.scripts.models import *
-from Code.scripts.training import train
-from Code.scripts.datasets import BenignAndMalignantDataset
-from Code.scripts.transforms import *
-from Code.scripts.utils import *
-from Code.scripts.local_variables import *
+from models import *
+from training import train
+from datasets import BenignAndMalignantDataset
+from transforms import *
+from utils import *
+from local_variables import *
 import torch
 import torch.nn as nn
 from torchinfo import summary
@@ -33,16 +33,36 @@ def main():
 
     # What device are we using
     print("Using ", device)
+    print(torch.cuda.get_device_name(0))
 
     # Hyperparameters
     num_epochs = 100
-    learning_rate = 0.01
-    batch_size = 32
+    learning_rate = 0.0001
+    batch_size = 16
+    # batch_size = 32
+    # batch_size = 64
     num_workers = 1
     pin_memory = True
     shuffle = False
     test_set_ratio = 0.1
     weight_multiplier = 1.0
+
+    # Model to train
+    model = CNNv3().to(device)
+
+    # Transform to use
+    transform = transform_v1
+
+    # Optimizer to use
+    # optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
+    # optimizer = optim.Adagrad(model.parameters(), lr=learning_rate)
+
+    # Scheduler for the learning rate
+    scheduler = None
+    epoch_step = 25
+    scheduler_step = 0.1
+    scheduler = lr_scheduler.StepLR(optimizer, epoch_step, gamma=scheduler_step, verbose=True)
 
     # Split the data into training and testing sets while stratifying based on class labels
     train_df, test_df = prepare_dataframes(path_to_truth, test_set_ratio)
@@ -51,7 +71,8 @@ def main():
     print("Training set shape:", train_df.shape)
     print("Testing set shape:", test_df.shape)
 
-    # Creating a csv file out of the generated dataframes
+    # Creating a csv file out of the generated dataframes, if the csv file already exists, then change the dataframe
+    # based on the existing csv file
     if create_csv_from_dataframe(train_df, train_dir + '/train.csv') is False:
         create_dataframe_from_csv(train_dir + '/train.csv')
     if create_csv_from_dataframe(test_df, test_dir + '/test.csv') is False:
@@ -69,12 +90,6 @@ def main():
     # y_training_f2 = []
     # y_training_acc = []
 
-    # Model to train
-    model = CNNv0().to(device)
-
-    # Transform to use
-    transform = transform_v1
-
     # Defining loss functions and the optimizer
     # Since the dataset is imbalanced, we need to set weights
     # TODO: deal with this mess later
@@ -91,17 +106,6 @@ def main():
 
     # Loss function
     criterion = nn.CrossEntropyLoss(weight=train_weights).to(device)
-
-    # Optimizer to use
-    # optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
-    # optimizer = optim.Adagrad(model.parameters(), lr=learning_rate)
-
-    # Scheduler for the learning rate
-    scheduler = None
-    epoch_step = 25
-    scheduler_step = 0.1
-    # scheduler = lr_scheduler.StepLR(optimizer, epoch_step, gamma=scheduler_step, verbose=True)
 
     # Naming
     CNN_VERSION = type(model).__name__ + "_"

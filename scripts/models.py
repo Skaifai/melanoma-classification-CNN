@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from Code.scripts.custom_functions import ProposedActivation
+from custom_functions import ProposedActivation
 
 
 # The original model proposed in "An accurate and noninvasive skin cancer screening based on imaging technique"
@@ -290,6 +290,7 @@ class CNNv2(nn.Module):
         return x
 
 
+# v2 BUT Batch Normalization is performed before the activation
 class CNNv3(nn.Module):
     def __init__(self):
         super(CNNv3, self).__init__()
@@ -351,7 +352,7 @@ class CNNv3(nn.Module):
 
         return x
 
-
+# CNN but BN layers are before activation
 class CNNv4(nn.Module):
     def __init__(self):
         super(CNNv4, self).__init__()

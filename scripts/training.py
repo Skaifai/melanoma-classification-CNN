@@ -1,6 +1,6 @@
 import copy
 import math
-from Code.scripts.utils import check_accuracy
+from utils import check_accuracy
 from tqdm import tqdm
 
 
